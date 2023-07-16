@@ -1,0 +1,121 @@
+common:
+  constants:
+    source: en
+    target: es
+steps:
+   - type: concatenate
+     parameters:
+      inputs:
+      - !varstr "/home/jairo/TFM/Paracrawl.{source}"
+      - !varstr "/home/jairo/TFM/Paracrawl.{target}"
+      output: concatenatedPC.en-es.gz
+
+   - type: train_ngram
+     parameters:
+      data: concatenatedPC.en-es.gz
+      parameters:
+         norder: 5
+         dscale: 1
+      model: ngramModelPC.gz
+
+   - type: filter
+     parameters:
+      inputs:
+      - !varstr "/home/jairo/TFM/Paracrawl.{source}"
+      - !varstr "/home/jairo/TFM/Paracrawl.{target}"
+      outputs: 
+      - !varstr filteredPC.{source}
+      - !varstr filteredPC.{target}
+      filters:
+       - LengthFilter:
+          min_length: 1
+          max_length: 100
+          unit: word
+       - LengthRatioFilter:
+          threshold: 3
+          unit: word
+       - LongWordFilter:
+          threshold: 40
+       - HtmlTagFilter: {}
+       - CharacterScoreFilter:
+          scripts: [Latin, Latin]
+          thresholds: [1,1]
+      filterfalse: false
+
+   - type: train_ngram
+     parameters:
+      data: !varstr filteredPC.{source}
+      parameters:
+         norder: 15
+         dscale: 0.1
+      model: ngram-enPC.gz
+   
+   - type: train_ngram
+     parameters:
+      data: !varstr filteredPC.{target}
+      parameters:
+         norder: 15
+         dscale: 0.1
+      model: ngram-esPC.gz
+   
+   #- type: subset
+     #parameters:
+      #inputs: [!varstr "/home/jairo/TFM/Paracrawl.{source}", !varstr "/home/jairo/TFM/Paracrawl.{target}"]
+      #outputs: [subset_70k.enPC.gz, subset_70k.esPC.gz]
+      #seed: 123
+      #size: 70000
+   - type: split
+     parameters:
+      inputs: [!varstr "/home/jairo/TFM/Paracrawl.{source}", !varstr "/home/jairo/TFM/Paracrawl.{target}"]
+      outputs: [testset_30k.enPC.gz, testset_30k.esPC.gz]
+      outputs_2: [subset_70k.enPC.gz, subset_70k.esPC.gz]
+      divisor: 3.5
+      seed: 2023
+   
+   - type: score
+     parameters:
+      inputs:
+      - subset_70k.enPC.gz
+      - subset_70k.esPC.gz
+      output: subset_70k-scoresPC.en-es.json
+      filters: &scorefilt
+      - LengthFilter:
+          name: char
+          unit: char
+      - LengthFilter:
+          name: word
+          unit: word
+      - LengthRatioFilter:
+          name: char
+          unit: char
+      - LengthRatioFilter:
+          name: word
+          unit: word
+      - LongWordFilter: {}
+      - CharacterScoreFilter:
+          scripts: [Latin, Latin]
+      - LanguageIDFilter:
+          name: cld2
+          id_method: cld2
+          languages: [en, es]
+      - TerminalPunctuationFilter: {}
+      - NonZeroNumeralsFilter: {}
+      - CrossEntropyFilter:
+          lm_params:
+           - filename: ngram-enPC.gz
+             interpolate:
+             - [ngramModelPC.gz, 0.01]
+           - filename: ngram-esPC.gz
+             interpolate:
+             - [ngramModelPC.gz, 0.01]
+      filterfalse: false
+   
+   - type: score
+     parameters:
+      #inputs: [!varstr "/home/jairo/TFM/Paracrawl.{source}", !varstr "/home/jairo/TFM/Paracrawl.{target}"]
+      inputs:
+      - testset_30k.enPC.gz
+      - testset_30k.esPC.gz
+      output: subset_30k-scores.en-esPC.json
+      filters: *scorefilt
+      

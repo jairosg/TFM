@@ -1,0 +1,39 @@
+steps:
+  
+  - type: train_classifier
+    parameters:
+      training_scores: subset_70k-scoresPC.en-es.json
+      criterion: CE
+      model_type: LogisticRegression
+      model_parameters:
+          solver: liblinear
+          C: 0.1
+      model: ce_model
+      features:
+          CharacterScoreFilter:
+              clean-direction: high
+              quantiles: &def_quant
+                  min: 0
+                  max: 0.1
+                  initial: 0.02
+          CrossEntropyFilter:
+              clean-direction: low
+              quantiles: *def_quant
+          LanguageIDFilter:
+              clean-direction: high
+              quantiles: *def_quant
+          NonZeroNumeralsFilter:
+              clean-direction: high
+              quantiles: *def_quant
+          TerminalPunctuationFilter:
+              clean-direction: high
+              quantiles: *def_quant
+  
+  - type: classify
+    parameters:
+     output_probabilities: ce.en-es.probabilitiesPC.txt
+     output_labels: ce.en-es.labelsPC.txt
+     model: ce_model
+     #scores: dataset-scores.en-esPC.json
+     scores: subset_30k-scores.en-esPC.json
+
