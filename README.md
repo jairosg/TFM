@@ -44,6 +44,9 @@ Una vez se tengan instaladas las herramientas necesarias y definidos los pipelin
 
 Los ficheros de entrada para este método se encuentran en la carpeta /Data test, los ficheros tienen el mismo nombre para las tres herramientas pero distribuidos en su carpeta correspondiente a la herramienta. Mediante el uso de estos fihceros de entrada se deberá obtener los ficheros de salida encontrados en la carpeta /Outputs
 
+## OpusFilter
+En el directorio /OpusFilter se encuentran los archivos de configuración utilizados para el uso de la herramienta. Así como un script donde se comprueba de manera manual que la salida de la herramienta se corresponde con el cálculo de la probabilidad, a través de la fórmula de regresión logística. Los datos de entrada se encuentran en la carpeta /Data test.
+
 ## Autor
 Jairo Sánchez García.
 
