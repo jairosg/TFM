@@ -20,7 +20,8 @@ Primeramente, con el fichero /scripts/lectura.py, se va a sacar la longitud medi
 Para poder realizar el análisis y pruebas con un número de unidades de traducción manejable, con el fichero /scripts/genTest.py, se extraen 100 muestras aleatorias de segmentos paralelos. 
 En la carpeta /Data test según la versión de Bicleaner, se encuentran todos los archivos resultantes de las operaciones anteriores descritas.
 
-Por último, para visualizar el procentaje de unidades de traducción que no superan el umbral y ver de esta manera que dataset es de mayor calidad se utiliza el fichero /scripts/umbra-gx.py. Cuyo resultado, con los subconjutos de datos usados, son: Poner imágenes.
+Por último, para visualizar el procentaje de unidades de traducción que no superan el umbral y ver de esta manera que dataset es de mayor calidad se utiliza el fichero /scripts/umbra-gx.py. Cuyo resultado, con los subconjutos de datos usados, son: ![Bicleaner Clásico](umbral_pc_xl.pdf), ![Bicleaner AI Lite](umbral_pc_xl_lite.pdf) y ![Bicleaner AI Full](umbral_pc_xl_full.pdf).
+
 
 ## Mejora de la calidad de datos
 Para poder utilizar el método es necesario realizar las siguientes instalaciones:
